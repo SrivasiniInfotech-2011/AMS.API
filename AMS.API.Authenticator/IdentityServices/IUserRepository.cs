@@ -1,0 +1,28 @@
+﻿namespace AMS.API.Authenticator.IdentityServices
+{
+    public interface IUserRepository
+    {
+
+        /// <summary>
+        /// Validate User Credentials.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns>Returns Validation Result</returns>
+        Task<bool> ValidateCredentials(string username, string password);
+
+        /// <summary>
+        /// Find User By Id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Returns User By Id</returns>
+        Task<User> FindById(string id);
+
+        /// <summary>
+        /// Find By User Name.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>Returns User By Username</returns>
+        Task<User> FindByUsername(string username);
+    }
+}
