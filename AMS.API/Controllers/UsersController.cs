@@ -3,6 +3,7 @@ using AMS.API.Services.Queries;
 using AMS.Models.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace AMS.API.Controllers
@@ -48,10 +49,13 @@ namespace AMS.API.Controllers
             var query = new GetUserByUserNameAndPassword.Query(loginRequest.UserName, loginRequest.Password);
             var user = await mediator.Send(query);
             var userToken = await IdentityServer4Client.LoginAsync(loginRequest.UserName, loginRequest.Password);
-            return Ok(new {User= user ,Token=userToken.AccessToken});
-
-
+            return Ok(new Response
+            {
+                Status = Status.Success,
+                Message = JsonConvert.SerializeObject(new { User = user, Token = userToken.AccessToken })
+            });
         }
+
 
         /// <summary>
         /// Create an User.
@@ -62,7 +66,7 @@ namespace AMS.API.Controllers
         [Route("CreateUser")]
         public async Task<IActionResult> CreateApartment([FromBody] User user)
         {
-           var newUser= await mediator.Send(new CreateUser.Command(user));
+            var newUser = await mediator.Send(new CreateUser.Command(user));
 
             return Ok(newUser);
         }
@@ -74,7 +78,7 @@ namespace AMS.API.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("UpdateUser/{id}")]
-        public async Task<IActionResult> UpdateApartment(int id,[FromBody] User user)
+        public async Task<IActionResult> UpdateApartment(int id, [FromBody] User user)
         {
             user.UserId = id;
             await mediator.Send(new UpdateUser.Command(user));
