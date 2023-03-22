@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,12 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AMS.Models\AMS.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Billing\Data\" />
-    <Folder Include="Areas\Billing\Models\" />
-    <Folder Include="Areas\Billing\Views\" />
   </ItemGroup>
 
 </Project>

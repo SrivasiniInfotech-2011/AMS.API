@@ -17,4 +17,13 @@
     <ProjectReference Include="..\AMS.Models\AMS.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="CARoot.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="damienbodserver.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

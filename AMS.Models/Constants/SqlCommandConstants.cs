@@ -168,6 +168,9 @@
                                                                           ,[User_Modified_Date]
                                                                           ,[User_IsActive]
                                                                       FROM [APARTMENT_MAINTENANCE_DB].[dbo].[AMB_USER_DETAILS] Where [User_Id] = @UserId;";
+
+        public const string BMS_ADD_EDIT_DELETE_BANKDETAILS = "[dbo].[BMS_ADD_EDIT_DELETE_BANKDETAILS]";
+        public const string BMS_FETCH_BANKDETAILS = "[dbo].[BMS_FETCH_BANKDETAILS]";
         public enum Mode
         {
             ADD = 1,

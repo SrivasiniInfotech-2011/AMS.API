@@ -25,6 +25,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using IdentityServer4.AccessTokenValidation;
 using AMS.Models.Constants;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using AMS.API.Areas.Billing.Repositories;
+using AMS.API.Areas.Billing.Services.Queries;
 
 namespace AMS.API
 {
@@ -45,6 +48,20 @@ namespace AMS.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AMS.API", Version = "v1" });
+                c.TagActionsBy(api =>
+                {
+                    if (api.ActionDescriptor is ControllerActionDescriptor actionDescriptor)
+                    {
+                        var group = actionDescriptor.ControllerTypeInfo.GetCustomAttributes(typeof(GroupTagAttribute), true)
+                            .Cast<GroupTagAttribute>().FirstOrDefault();
+                        var groupName = actionDescriptor.ControllerTypeInfo.GetCustomAttribute<AreaAttribute>() == null ? actionDescriptor.ControllerName : actionDescriptor.ControllerTypeInfo.GetCustomAttribute<AreaAttribute>().RouteValue;
+                        return group != null
+                            ? new List<string> { group.Name }
+                            : new List<string> { groupName };
+                    }
+
+                    throw new NullReferenceException("Couldn't find the group name");
+                });
 
             });
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
@@ -61,17 +78,18 @@ namespace AMS.API
             services.AddTransient<ITenantRepository, TenantRepository>();
             services.AddTransient<IHouseOwnerRepository, HouseOwnerRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IBankRepository, BankReporitory>(s=>new BankReporitory(new DapperContext(Configuration.GetConnectionString("BMSConnectionString"))));
 
             services.AddMediatR(typeof(Startup).GetTypeInfo().Assembly);
             services.AddTransient<IMediator, Mediator>();
 
             services.AddTransient<IRequestHandler<GetAllApartments.Query, List<Apartment>>, GetAllApartments.Handler>();
-            services.AddTransient<IRequestHandler<GetApartment.Query, Apartment>, GetApartment.Handler>();
-            services.AddTransient<IRequestHandler<GetApartment.Query, Apartment>, GetApartment.Handler>();
-            services.AddTransient<IRequestHandler<GetApartmentByExpression.Query, Apartment>, GetApartmentByExpression.Handler>();
-            services.AddTransient<IRequestHandler<CreateApartment.Command,Apartment>, CreateApartment.Handler>();
-            services.AddTransient<IRequestHandler<DeActivateApartment.Command>, DeActivateApartment.Handler>();
-            services.AddTransient<IRequestHandler<UpdateApartment.Command>, UpdateApartment.Handler>();
+            services.AddTransient<IRequestHandler<Services.Queries.GetBank.Query, Apartment>, Services.Queries.GetBank.Handler>();
+            //services.AddTransient<IRequestHandler<Services.Queries.GetBank.Query, Apartment>, Services.Queries.GetBank.Handler>();
+            services.AddTransient<IRequestHandler<Services.Queries.GetBankByExpression.Query, Apartment>, Services.Queries.GetBankByExpression.Handler>();
+            services.AddTransient<IRequestHandler<CreateBank.Command, Apartment>, CreateBank.Handler>();
+            services.AddTransient<IRequestHandler<DeActivateBank.Command>, DeActivateBank.Handler>();
+            services.AddTransient<IRequestHandler<UpdateBank.Command>, UpdateBank.Handler>();
 
             services.AddTransient<IRequestHandler<GetAllBlocks.Query, List<Block>>, GetAllBlocks.Handler>();
             services.AddTransient<IRequestHandler<GetBlock.Query, Block>, GetBlock.Handler>();
@@ -112,6 +130,13 @@ namespace AMS.API
             services.AddTransient<IRequestHandler<CreateUser.Command, User>, CreateUser.Handler>();
             services.AddTransient<IRequestHandler<DeActivateUser.Command>, DeActivateUser.Handler>();
             services.AddTransient<IRequestHandler<UpdateUser.Command>, UpdateUser.Handler>();
+
+
+            services.AddTransient<IRequestHandler<Areas.Billing.Services.Queries.GetAllBanks.Query, List<Bank>>, Areas.Billing.Services.Queries.GetAllBanks.Handler>();
+            services.AddTransient<IRequestHandler<Areas.Billing.Services.Queries.GetBank.Query, Bank>, Areas.Billing.Services.Queries.GetBank.Handler>();
+            services.AddTransient<IRequestHandler<Areas.Billing.Services.Commands.CreateBank.Command, Bank>, Areas.Billing.Services.Commands.CreateBank.Handler>();
+            services.AddTransient<IRequestHandler<Areas.Billing.Services.Commands.DeActivateBank.Command>, Areas.Billing.Services.Commands.DeActivateBank.Handler>();
+            services.AddTransient<IRequestHandler<Areas.Billing.Services.Commands.UpdateBank.Command>, Areas.Billing.Services.Commands.UpdateBank.Handler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

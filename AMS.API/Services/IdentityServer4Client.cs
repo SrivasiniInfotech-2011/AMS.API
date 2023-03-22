@@ -9,7 +9,7 @@ namespace AMS.API.Services.Queries
     public static class IdentityServer4Client
     {
         private static HttpClient _httpClient = new HttpClient();
-        private static string _stsUrl = "https://localhost:7269/";
+        private static string _stsUrl = "https://localhost:44333/";
         private static DiscoveryDocumentResponse _disco;
 
         public static async Task<TokenResponse> LoginAsync(string user, string password)
