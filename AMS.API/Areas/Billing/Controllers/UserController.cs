@@ -4,27 +4,37 @@ using AMS.Models.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using NLog;
 using System.Threading.Tasks;
 
 namespace AMS.API.Areas.Billing.Controllers
 {
-   
+
     [Area("Billing")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
+        #region [Private ReadOnly Fields]
         private readonly IMediator mediator;
+        private readonly ILogger<UserController> _logger;
+        #endregion
 
+        #region [Constructor]
         /// <summary>
         /// Constructor For ApartmentsController
         /// </summary>
         /// <param name="mediator"></param>
-        public UserController(IMediator mediator)
+        public UserController(IMediator mediator, ILogger<UserController> logger)
         {
             this.mediator = mediator;
+            _logger = logger;
         }
+        #endregion
+
+        #region [Public Api Methods]
 
         /// <summary>
         /// Get All Users.
@@ -36,9 +46,17 @@ namespace AMS.API.Areas.Billing.Controllers
         [Route("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var apartments = await mediator.Send(new GetAllUsers.Query());
+            try
+            {
+                var apartments = await mediator.Send(new GetAllUsers.Query());
 
-            return Ok(apartments);
+                return Ok(apartments);
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError($"Error occured while trying to fetch All Users. error: {ex?.Message}, stack trace: {ex?.StackTrace}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -51,14 +69,22 @@ namespace AMS.API.Areas.Billing.Controllers
         [Route("GetUserByUserNameAndPassword")]
         public async Task<IActionResult> GetUserById(LoginRequest loginRequest)
         {
-            var query = new GetUserByUserNameAndPassword.Query(loginRequest.UserName, loginRequest.Password);
-            var user = await mediator.Send(query);
-            var userToken = await IdentityServer4Client.LoginAsync(loginRequest.UserName, loginRequest.Password);
-            return Ok(new Response
+            try
             {
-                Status = Status.Success,
-                Message = JsonConvert.SerializeObject(new { User = user, Token = userToken.AccessToken })
-            });
+                var query = new GetUserByUserNameAndPassword.Query(loginRequest.UserName, loginRequest.Password);
+                var user = await mediator.Send(query);
+                var userToken = await IdentityServer4Client.LoginAsync(loginRequest.UserName, loginRequest.Password);
+                return Ok(new Response
+                {
+                    Status = Status.Success,
+                    Message = JsonConvert.SerializeObject(new { User = user, Token = userToken.AccessToken })
+                });
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError($"Error occured while trying to getting User By Id. error: {ex?.Message}, stack trace: {ex?.StackTrace}");
+                throw;
+            }
         }
 
 
@@ -72,9 +98,17 @@ namespace AMS.API.Areas.Billing.Controllers
         [Route("CreateUser")]
         public async Task<IActionResult> CreateApartment([FromBody] User user)
         {
-            var newUser = await mediator.Send(new CreateUser.Command(user));
+            try
+            {
+                var newUser = await mediator.Send(new CreateUser.Command(user));
 
-            return Ok(newUser);
+                return Ok(newUser);
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError($"Error occured while trying to Create a User. error: {ex?.Message}, stack trace: {ex?.StackTrace}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -87,10 +121,18 @@ namespace AMS.API.Areas.Billing.Controllers
         [Route("UpdateUser/{id}")]
         public async Task<IActionResult> UpdateApartment(int id, [FromBody] User user)
         {
-            user.UserId = id;
-            await mediator.Send(new UpdateUser.Command(user));
+            try
+            {
+                user.UserId = id;
+                await mediator.Send(new UpdateUser.Command(user));
 
-            return Ok("Success");
+                return Ok("Success");
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError($"Error occured while trying to Update a User. error: {ex?.Message}, stack trace: {ex?.StackTrace}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -103,9 +145,19 @@ namespace AMS.API.Areas.Billing.Controllers
         [Route("DeactivateUser/{id}")]
         public async Task<IActionResult> DeactivateUser([FromQuery] int id)
         {
-            await mediator.Send(new DeActivateUser.Command(id));
+            try
+            {
+                await mediator.Send(new DeActivateUser.Command(id));
 
-            return Ok("Success");
+                return Ok("Success");
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError($"Error occured while trying to De Activate a User. error: {ex?.Message}, stack trace: {ex?.StackTrace}");
+                throw;
+            }
         }
+
+        #endregion
     }
 }

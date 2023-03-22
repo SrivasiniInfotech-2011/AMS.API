@@ -2,8 +2,11 @@
 using AMS.API.Repositories.Apartments;
 using AMS.Models.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
+using NLog;
 
 namespace AMS.API.Areas.Billing.Services.Commands
 {
@@ -23,15 +26,24 @@ namespace AMS.API.Areas.Billing.Services.Commands
         public class Handler : IRequestHandler<Command, Bank>
         {
             private readonly IBankRepository bankRepository;
-
-            public Handler(IBankRepository repository)
+            private readonly ILogger<Handler> _logger;
+            public Handler(IBankRepository repository, ILogger<Handler> logger)
             {
                 bankRepository = repository;
+                _logger = logger;
             }
 
             public async Task<Bank> Handle(Command message, CancellationToken cancellationToken)
             {
-                return await bankRepository.InsertBank(message.Bank);
+                try
+                {
+                    return await bankRepository.InsertBank(message.Bank);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Exception occured when trying to Create a New bank. Input param values are: {nameof(message.Bank.BankName)}: {message.Bank.BankName}, error message: {ex?.Message}, stack trace: {ex?.StackTrace}");
+                    throw;
+                }
 
             }
         }

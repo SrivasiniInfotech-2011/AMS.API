@@ -27,8 +27,6 @@ using IdentityServer4.AccessTokenValidation;
 using AMS.Models.Constants;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using AMS.API.Areas.Billing.Repositories;
-using AMS.API.Areas.Billing.Services.Queries;
-
 namespace AMS.API
 {
     public class Startup
@@ -82,14 +80,14 @@ namespace AMS.API
 
             services.AddMediatR(typeof(Startup).GetTypeInfo().Assembly);
             services.AddTransient<IMediator, Mediator>();
-
+            
             services.AddTransient<IRequestHandler<GetAllApartments.Query, List<Apartment>>, GetAllApartments.Handler>();
-            services.AddTransient<IRequestHandler<Services.Queries.GetBank.Query, Apartment>, Services.Queries.GetBank.Handler>();
             //services.AddTransient<IRequestHandler<Services.Queries.GetBank.Query, Apartment>, Services.Queries.GetBank.Handler>();
-            services.AddTransient<IRequestHandler<Services.Queries.GetBankByExpression.Query, Apartment>, Services.Queries.GetBankByExpression.Handler>();
-            services.AddTransient<IRequestHandler<CreateBank.Command, Apartment>, CreateBank.Handler>();
-            services.AddTransient<IRequestHandler<DeActivateBank.Command>, DeActivateBank.Handler>();
-            services.AddTransient<IRequestHandler<UpdateBank.Command>, UpdateBank.Handler>();
+            //services.AddTransient<IRequestHandler<Services.Queries.GetBank.Query, Apartment>, Services.Queries.GetBank.Handler>();
+            //services.AddTransient<IRequestHandler<Services.Queries.GetBankByExpression.Query, Apartment>, Services.Queries.GetBankByExpression.Handler>();
+            //services.AddTransient<IRequestHandler<CreateBank.Command, Apartment>, CreateBank.Handler>();
+            //services.AddTransient<IRequestHandler<DeActivateBank.Command>, DeActivateBank.Handler>();
+            //services.AddTransient<IRequestHandler<UpdateBank.Command>, UpdateBank.Handler>();
 
             services.AddTransient<IRequestHandler<GetAllBlocks.Query, List<Block>>, GetAllBlocks.Handler>();
             services.AddTransient<IRequestHandler<GetBlock.Query, Block>, GetBlock.Handler>();
@@ -166,7 +164,7 @@ namespace AMS.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+            });          
         }
     }
 }
