@@ -12,10 +12,10 @@ namespace AMS.API.Areas.Billing.Services.Queries
     {
         public class Query : IRequest<Bank>
         {
-            public Func<Bank, bool> BankExpressiom;
+            public Func<Bank, bool> BankExpression;
             public Query(Func<Bank, bool> expression)
             {
-                BankExpressiom = expression;
+                BankExpression = expression;
             }
         }
 
@@ -30,7 +30,7 @@ namespace AMS.API.Areas.Billing.Services.Queries
             public async Task<Bank> Handle(Query request, CancellationToken cancellationToken)
             {
                 var bankList= await bankRepository.GetAllBanks();
-                return bankList.FirstOrDefault(request.BankExpressiom);
+                return bankList.FirstOrDefault(request.BankExpression);
             }
         }
     }

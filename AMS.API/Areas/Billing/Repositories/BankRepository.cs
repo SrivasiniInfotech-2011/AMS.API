@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AMS.API.Areas.Billing.Repositories
 {
-    public class BankReporitory : IBankRepository
+    public class BankRepository : IBankRepository
     {
         private IDapperContext _dapperContext;
         private SqlConnection sqlConnection;
@@ -19,7 +19,7 @@ namespace AMS.API.Areas.Billing.Repositories
         /// Constructor.
         /// </summary>
         /// <param name="dapperContext"></param>
-        public BankReporitory(IDapperContext dapperContext)
+        public BankRepository(IDapperContext dapperContext)
         {
             _dapperContext = dapperContext;
             sqlConnection = _dapperContext.GetSqlConnection();
