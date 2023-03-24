@@ -171,10 +171,15 @@
 
         public const string BMS_ADD_EDIT_DELETE_BANKDETAILS = "[dbo].[BMS_ADD_EDIT_DELETE_BANKDETAILS]";
         public const string BMS_FETCH_BANKDETAILS = "[dbo].[BMS_FETCH_BANKDETAILS]";
+
+        public const string BMS_ADD_EDIT_DELETE_COMPANYDETAILS = "[dbo].[BMS_ADD_EDIT_DELETE_COMPANYDETAILS]";
+        public const string BMS_FETCH_COMPANYDETAILS = "[dbo].[BMS_FETCH_COMPANYDETAILS]";
+
         public enum Mode
         {
             ADD = 1,
-            MODIFY = 2
+            MODIFY = 2,
+            DELETE=3
         }
     }
 
