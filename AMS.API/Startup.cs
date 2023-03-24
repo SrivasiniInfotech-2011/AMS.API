@@ -84,7 +84,7 @@ namespace AMS.API
 
             services.AddMediatR(typeof(Startup).GetTypeInfo().Assembly);
             services.AddTransient<IMediator, Mediator>();
-
+            
             services.AddTransient<IRequestHandler<GetAllApartments.Query, List<Apartment>>, GetAllApartments.Handler>();
             //services.AddTransient<IRequestHandler<Services.Queries.GetBank.Query, Apartment>, Services.Queries.GetBank.Handler>();
             //services.AddTransient<IRequestHandler<Services.Queries.GetBank.Query, Apartment>, Services.Queries.GetBank.Handler>();
@@ -193,7 +193,7 @@ namespace AMS.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+            });          
         }
     }
 }
