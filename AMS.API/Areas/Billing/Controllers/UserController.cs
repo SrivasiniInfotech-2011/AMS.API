@@ -1,7 +1,9 @@
 ﻿using AMS.API.Services.Commands;
 using AMS.API.Services.Queries;
 using AMS.Models.Entities;
+using IdentityModel.Client;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -44,6 +46,7 @@ namespace AMS.API.Areas.Billing.Controllers
         [GroupTag("Billing")]
         [HttpGet]
         [Route("GetAllUsers")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -77,7 +80,7 @@ namespace AMS.API.Areas.Billing.Controllers
                 return Ok(new Response
                 {
                     Status = Status.Success,
-                    Message = JsonConvert.SerializeObject(new { User = user, Token = userToken.AccessToken })
+                    Message = JsonConvert.SerializeObject(new { User = user, Token = userToken.AccessToken, Expiry = userToken.ExpiresIn })
                 });
             }
             catch (System.Exception ex)
@@ -96,6 +99,7 @@ namespace AMS.API.Areas.Billing.Controllers
         [GroupTag("Billing")]
         [HttpPost]
         [Route("CreateUser")]
+        [Authorize]
         public async Task<IActionResult> CreateApartment([FromBody] User user)
         {
             try
@@ -119,6 +123,7 @@ namespace AMS.API.Areas.Billing.Controllers
         [GroupTag("Billing")]
         [HttpPut]
         [Route("UpdateUser/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateApartment(int id, [FromBody] User user)
         {
             try
@@ -143,6 +148,7 @@ namespace AMS.API.Areas.Billing.Controllers
         [GroupTag("Billing")]
         [HttpDelete]
         [Route("DeactivateUser/{id}")]
+        [Authorize]
         public async Task<IActionResult> DeactivateUser([FromQuery] int id)
         {
             try
@@ -154,6 +160,32 @@ namespace AMS.API.Areas.Billing.Controllers
             catch (System.Exception ex)
             {
                 _logger.LogError($"Error occured while trying to De Activate a User. error: {ex?.Message}, stack trace: {ex?.StackTrace}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get User By Id.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [GroupTag("Billing")]
+        [HttpPost]
+        [Route("RefreshToken")]
+        public async Task<IActionResult> RefreshToken(LoginRequest loginRequest)
+        {
+            try
+            {
+                TokenResponse userToken = await IdentityServer4Client.LoginAsync(loginRequest.UserName, loginRequest.Password);
+                return Ok(new Response
+                {
+                    Status = Status.Success,
+                    Message = JsonConvert.SerializeObject(new {Token = userToken.AccessToken,Expiry=userToken.ExpiresIn })
+                });
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError($"Error occured while trying to getting Refresh Token. error: {ex?.Message}, stack trace: {ex?.StackTrace}");
                 throw;
             }
         }
